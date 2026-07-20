@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mineração</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --bg-deep:#0b0f08;
+    --bg-panel:#141d0f;
+    --bg-panel-2:#1a2515;
+    --moss:#3f5c2f;
+    --moss-light:#6f9450;
+    --moss-line:#2a3a20;
+    --gold:#d4af37;
+    --gold-light:#f2d97a;
+    --gold-dim:#8a7127;
+    --cream:#ece6d3;
+    --muted:#8a9580;
+    --danger:#c0503a;
+    --danger-light:#e0987c;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:radial-gradient(circle at 50% 0%, #16220f 0%, var(--bg-deep) 65%);
+    color:var(--cream);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:32px 20px;
+}
+
+.box{
+    width:460px;
+    max-width:100%;
+    background:linear-gradient(180deg, var(--bg-panel-2) 0%, var(--bg-panel) 100%);
+    border:1px solid var(--moss-line);
+    border-radius:14px;
+    padding:64px 32px 28px;
+    position:relative;
+    box-shadow:
+        0 0 0 1px rgba(212,175,55,.06),
+        0 30px 60px -20px rgba(0,0,0,.7),
+        0 0 40px -10px rgba(63,92,47,.35);
+}
+
+.box::before{
+    content:"";
+    position:absolute;
+    top:0; left:14px; right:14px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+
+.corner-date{
+    position:absolute;
+    top:18px;
+    left:20px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.05em;
+    color:var(--muted);
+}
+
+.corner-time{
+    position:absolute;
+    top:18px;
+    right:20px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.05em;
+    color:var(--muted);
+}
+
+.live-dot{
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--moss-light);
+    box-shadow:0 0 6px 1px var(--moss-light);
+    animation:pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:.35; }
+}
+
+/* ---------- menu suspenso central ---------- */
+
+.top-menu{
+    position:absolute;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:30;
+}
+
+.dropdown-trigger{
+    background:transparent;
+    border:1px solid var(--moss-line);
+    color:var(--muted);
+    font-family:'Inter',sans-serif;
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    padding:5px 12px;
+    border-radius:5px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    transition:all .15s;
+}
+.dropdown-trigger:hover, .dropdown-trigger.open{
+    border-color:var(--gold-dim);
+    color:var(--gold-light);
+}
+.chev{
+    font-size:8px;
+    transition:transform .15s;
+    display:inline-block;
+}
+.dropdown-trigger.open .chev{ transform:rotate(180deg); }
+
+.dropdown-panel{
+    position:absolute;
+    top:calc(100% + 8px);
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--bg-panel-2);
+    border:1px solid var(--moss-line);
+    border-radius:8px;
+    padding:6px;
+    min-width:150px;
+    box-shadow:0 16px 34px -10px rgba(0,0,0,.65);
+    display:none;
+    flex-direction:column;
+    z-index:30;
+}
+.dropdown-panel.open{ display:flex; }
+.dropdown-panel a{
+    color:var(--cream);
+    text-decoration:none;
+    text-align:center;
+    font-size:12.5px;
+    font-family:'Inter',sans-serif;
+    padding:9px 11px;
+    border-radius:5px;
+    transition:background .12s, color .12s;
+}
+.dropdown-panel a:hover{
+    background:rgba(111,148,80,.2);
+    color:var(--gold-light);
+}
+
+/* ---------- idioma ---------- */
+
+.lang-wrap{
+    position:absolute;
+    top:37px;
+    right:20px;
+    z-index:30;
+}
+
+.lang-panel{
+    position:absolute;
+    top:calc(100% + 6px);
+    right:0;
+    background:var(--bg-panel-2);
+    border:1px solid var(--moss-line);
+    border-radius:8px;
+    padding:6px;
+    min-width:120px;
+    box-shadow:0 16px 34px -10px rgba(0,0,0,.65);
+    display:none;
+    flex-direction:column;
+    z-index:30;
+}
+.lang-panel.open{ display:flex; }
+.lang-panel button{
+    background:transparent;
+    border:none;
+    color:var(--cream);
+    text-align:left;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.04em;
+    padding:8px 10px;
+    border-radius:5px;
+    cursor:pointer;
+    transition:background .12s, color .12s;
+}
+.lang-panel button:hover{ background:rgba(212,175,55,.12); color:var(--gold-light); }
+.lang-panel button.active{ color:var(--gold-light); font-weight:600; }
+
+.eyebrow{
+    text-align:center;
+    font-size:10.5px;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+    margin-bottom:6px;
+    font-weight:500;
+}
+
+h2{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    font-size:30px;
+    text-align:center;
+    letter-spacing:.01em;
+    color:var(--cream);
+    margin-bottom:4px;
+}
+
+.divider{
+    width:64px;
+    height:2px;
+    margin:14px auto 22px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    border-radius:2px;
+}
+
+.section-label{
+    font-size:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+    margin:20px 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.section-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--moss-line);
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+    gap:12px;
+}
+
+.row label{
+    width:44%;
+    font-size:13px;
+    color:var(--muted);
+    font-weight:500;
+}
+
+.input-wrap{
+    width:56%;
+    position:relative;
+    display:flex;
+    align-items:center;
+}
+
+.input-wrap input{
+    width:100%;
+    background:#0e1409;
+    color:var(--gold-light);
+    border:1px solid var(--moss-line);
+    padding:9px 11px;
+    border-radius:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    text-align:right;
+    transition:border-color .15s, box-shadow .15s, opacity .15s;
+}
+
+.input-wrap input::-webkit-outer-spin-button,
+.input-wrap input::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+}
+.input-wrap input[type=number]{ -moz-appearance:textfield; }
+
+.input-wrap input:focus{
+    outline:none;
+    border-color:var(--gold-dim);
+    box-shadow:0 0 0 3px rgba(212,175,55,.12);
+}
+
+.input-wrap input[readonly]{
+    color:var(--cream);
+    background:#101a0b;
+    border-color:var(--moss-line);
+    cursor:default;
+}
+
+.input-wrap input::placeholder{ color:#3d4636; }
+
+.affix{
+    position:absolute;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--gold-dim);
+    letter-spacing:.04em;
+    pointer-events:none;
+}
+.affix.prefix{ left:10px; }
+.affix.suffix{ right:11px; }
+
+.input-wrap.has-prefix input{ padding-left:22px; }
+.input-wrap.has-suffix input{ padding-right:32px; }
+
+.row.highlight .input-wrap input[readonly]{
+    color:var(--gold-light);
+    border-color:rgba(212,175,55,.35);
+    font-weight:600;
+}
+
+.producao-row{
+    position:relative;
+    margin-top:8px;
+}
+
+.mined-big{
+    width:100%;
+    text-align:center;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:31px;
+    letter-spacing:.02em;
+    color:var(--gold-light);
+    text-shadow:0 0 18px rgba(212,175,55,.25);
+}
+
+.mined-big .mined-symbol{
+    font-size:15px;
+    font-weight:600;
+    color:var(--gold-dim);
+    letter-spacing:.15em;
+    margin-right:8px;
+    vertical-align:middle;
+}
+
+.btn-square{
+    position:absolute;
+    right:0;
+    top:50%;
+    transform:translateY(-50%);
+    width:38px;
+    height:38px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    background:linear-gradient(180deg, var(--moss-light), var(--moss));
+    border:1px solid var(--gold-dim);
+    color:var(--gold-light);
+    box-shadow:0 4px 12px -4px rgba(63,92,47,.6);
+    cursor:pointer;
+    transition:filter .12s, opacity .12s, transform .12s;
+}
+.btn-square:hover:not(:disabled){ filter:brightness(1.15); }
+.btn-square:active:not(:disabled){ transform:translateY(-50%) scale(.93); }
+.btn-square:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+    background:transparent;
+    border:1px solid var(--moss-line);
+    color:var(--muted);
+}
+.btn-square svg{ width:18px; height:18px; }
+
+.mined-caption{
+    text-align:center;
+    font-size:10px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-top:4px;
+    margin-bottom:18px;
+}
+
+.prog-wrap{ margin-top:6px; }
+
+.prog-labels{
+    display:flex;
+    justify-content:space-between;
+    font-size:10.5px;
+    color:var(--muted);
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    margin-bottom:6px;
+}
+
+.prog{
+    width:100%;
+    height:12px;
+    background:#0e1409;
+    border:1px solid var(--moss-line);
+    border-radius:20px;
+    overflow:hidden;
+    position:relative;
+}
+
+.bar{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg, var(--moss) 0%, var(--gold-dim) 55%, var(--gold) 100%);
+    border-radius:20px;
+    position:relative;
+    transition:width .2s linear;
+}
+
+.bar::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+    width:40px;
+    animation:shimmer 2.4s linear infinite;
+}
+
+@keyframes shimmer{
+    0%{ transform:translateX(-40px); }
+    100%{ transform:translateX(220px); }
+}
+
+#tempo{
+    text-align:center;
+    margin-top:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:.06em;
+    color:var(--gold-light);
+    text-shadow:0 0 18px rgba(212,175,55,.25);
+}
+
+.botoes{
+    display:flex;
+    justify-content:center;
+    margin-top:24px;
+}
+
+button{
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    border:1px solid transparent;
+    padding:12px 26px;
+    cursor:pointer;
+    border-radius:7px;
+    transition:transform .12s, filter .12s, opacity .12s, background .12s;
+}
+
+button:active{ transform:scale(.97); }
+
+#btnStart{
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    color:#1a1502;
+    box-shadow:0 6px 18px -6px rgba(212,175,55,.55);
+}
+#btnStart:hover:not(:disabled){ filter:brightness(1.08); }
+#btnStart:disabled{ opacity:.4; cursor:not-allowed; filter:none; }
+
+.status{
+    text-align:center;
+    font-size:10.5px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-top:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+}
+.status .dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--danger);
+}
+.status.active .dot{
+    background:var(--moss-light);
+    box-shadow:0 0 8px 1px var(--moss-light);
+    animation:pulse 1.4s ease-in-out infinite;
+}
+.status.active{ color:var(--moss-light); }
+
+.status.stopped .dot{
+    background:var(--danger);
+    box-shadow:0 0 8px 1px var(--danger);
+}
+.status.stopped{ color:var(--danger-light); }
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="corner-date" id="cornerDate">--/--/----</div>
+<div class="corner-time" id="cornerTime"><span class="live-dot"></span><span id="cornerTimeText">--:--:--</span></div>
+
+<div class="top-menu">
+<button class="dropdown-trigger" id="menuTrigger" onclick="toggleMenu(event)">
+<span id="menuLabelText">Menu</span><span class="chev">▾</span>
+</button>
+<div class="dropdown-panel" id="menuDropdown">
+<a href="tarefas.html" id="navTarefas">Tarefas</a>
+<a href="carteira.html" id="navCarteira">Carteira</a>
+<a href="loja.html" id="navLoja">Loja</a>
+<a href="sobre.html" id="navSobre">Sobre</a>
+</div>
+</div>
+
+<div class="lang-wrap">
+<button class="dropdown-trigger" id="langTrigger" onclick="toggleLangMenu(event)">
+<span id="langTriggerText">PT</span><span class="chev">▾</span>
+</button>
+<div class="lang-panel" id="langDropdown">
+<button class="active" id="langOptPt" onclick="aplicarIdioma('pt')">Português</button>
+<button id="langOptEn" onclick="aplicarIdioma('en')">English</button>
+</div>
+</div>
+
+<div class="eyebrow" id="eyebrowText">Painel de Operação</div>
+<h2 id="titleText">Mineração</h2>
+<div class="divider"></div>
+
+<div class="section-label" id="secParamLabel">Parâmetros</div>
+
+<div class="row">
+<label id="lblCrypto">Valor da Crypto</label>
+<div class="input-wrap has-prefix">
+<span class="affix prefix">$</span>
+<input id="crypto" type="number" step="0.00000001" placeholder="0,00000000">
+</div>
+</div>
+
+<div class="row">
+<label id="lblInvest">Investimento</label>
+<div class="input-wrap has-prefix">
+<span class="affix prefix">$</span>
+<input id="investimento" type="number" step="0.01" placeholder="0,00">
+</div>
+</div>
+
+<div class="row">
+<label id="lblRoi">ROI % (Mensal)</label>
+<div class="input-wrap has-suffix">
+<input id="roi" type="number" step="0.01" placeholder="0,00">
+<span class="affix suffix">%</span>
+</div>
+</div>
+
+<div class="section-label" id="secRetornoLabel">Retorno Estimado</div>
+
+<div class="row highlight">
+<label id="lblGanhos">Ganhos</label>
+<div class="input-wrap has-prefix">
+<span class="affix prefix">$</span>
+<input id="ganhos" readonly placeholder="0,00">
+</div>
+</div>
+
+<div class="row">
+<label id="lblAtivo">Ativo</label>
+<div class="input-wrap">
+<input value="24h" readonly>
+</div>
+</div>
+
+<div class="row">
+<label id="lblGanhosGR">Ganhos GR</label>
+<div class="input-wrap has-suffix">
+<input id="ganhosTokens" readonly placeholder="0,00000000">
+<span class="affix suffix">GR</span>
+</div>
+</div>
+
+<div class="row">
+<label id="lblMineracaoSeg">Mineração/s</label>
+<div class="input-wrap has-suffix">
+<input id="mineracaoSegundo" readonly placeholder="0,0000000000">
+<span class="affix suffix">GR</span>
+</div>
+</div>
+
+<div class="section-label" id="secProducaoLabel">Produção</div>
+
+<div class="producao-row">
+<div class="mined-big"><span class="mined-symbol">GR</span><span id="minerados">0.00000000</span></div>
+<button id="btnCollect" class="btn-square" onclick="coletar()" disabled title="Coletar">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 3v10"/>
+<path d="M7 9l5 5 5-5"/>
+<path d="M4 18h16"/>
+</svg>
+</button>
+</div>
+<div class="mined-caption" id="minedCaptionText">Minerado neste ciclo</div>
+
+<div class="row">
+<label id="lblTotal">Total Minerado</label>
+<div class="input-wrap has-suffix">
+<input id="totalGR" readonly value="0.00000000">
+<span class="affix suffix">GR</span>
+</div>
+</div>
+
+<div class="prog-wrap">
+<div class="prog-labels">
+<span id="progLabelText">Ciclo mensal (30 dias)</span>
+<span id="progPct">0%</span>
+</div>
+<div class="prog"><div class="bar" id="bar"></div></div>
+</div>
+
+<div id="tempo">00:00:00</div>
+
+<div class="botoes">
+<button id="btnStart" onclick="start()">Iniciar</button>
+</div>
+
+<div class="status stopped" id="statusLine">
+<span class="dot"></span>
+<span id="statusText">Aguardando parâmetros</span>
+</div>
+
+</div>
+
+<script>
+
+const cryptoEl = document.getElementById("crypto");
+const investimento = document.getElementById("investimento");
+const roi = document.getElementById("roi");
+
+const ganhos = document.getElementById("ganhos");
+const ganhosTokens = document.getElementById("ganhosTokens");
+const mineracaoSegundo = document.getElementById("mineracaoSegundo");
+const minerados = document.getElementById("minerados");
+const totalGR = document.getElementById("totalGR");
+
+const tempo = document.getElementById("tempo");
+const cornerDate = document.getElementById("cornerDate");
+const cornerTimeText = document.getElementById("cornerTimeText");
+const bar = document.getElementById("bar");
+const progPct = document.getElementById("progPct");
+
+const btnStart = document.getElementById("btnStart");
+const btnCollect = document.getElementById("btnCollect");
+const statusLine = document.getElementById("statusLine");
+const statusText = document.getElementById("statusText");
+
+const menuTrigger = document.getElementById("menuTrigger");
+const menuDropdown = document.getElementById("menuDropdown");
+const langTrigger = document.getElementById("langTrigger");
+const langDropdown = document.getElementById("langDropdown");
+
+// ---------- menu suspenso ----------
+
+function toggleMenu(e){
+    e.stopPropagation();
+    menuDropdown.classList.toggle("open");
+    menuTrigger.classList.toggle("open");
+    langDropdown.classList.remove("open");
+    langTrigger.classList.remove("open");
+}
+
+function toggleLangMenu(e){
+    e.stopPropagation();
+    langDropdown.classList.toggle("open");
+    langTrigger.classList.toggle("open");
+    menuDropdown.classList.remove("open");
+    menuTrigger.classList.remove("open");
+}
+
+document.addEventListener("click", function(){
+    menuDropdown.classList.remove("open");
+    menuTrigger.classList.remove("open");
+    langDropdown.classList.remove("open");
+    langTrigger.classList.remove("open");
+});
+
+// ---------- i18n ----------
+
+const i18n = {
+    pt: {
+        title:"Mineração",
+        eyebrow:"Painel de Operação",
+        menuLabel:"Menu",
+        navTarefas:"Tarefas",
+        navCarteira:"Carteira",
+        navLoja:"Loja",
+        navSobre:"Sobre",
+        secParam:"Parâmetros",
+        lblCrypto:"Valor da Crypto",
+        lblInvest:"Investimento",
+        lblRoi:"ROI % (Mensal)",
+        secRetorno:"Retorno Estimado",
+        lblGanhos:"Ganhos",
+        lblAtivo:"Ativo",
+        lblGanhosGR:"Ganhos GR",
+        lblMineracaoSeg:"Mineração/s",
+        secProducao:"Produção",
+        minedCaption:"Minerado neste ciclo",
+        lblTotal:"Total Minerado",
+        progLabel:"Ciclo mensal (30 dias)",
+        tempoLabel:"Tempo em operação",
+        btnStart:"Iniciar",
+        phMoney:"0,00",
+        phCrypto:"0,00000000",
+        phTokens:"0,00000000",
+        phRate:"0,0000000000",
+        statusWaiting:"Aguardando parâmetros",
+        statusActive:"Mineração em andamento",
+        statusInvalid:"Preencha todos os campos corretamente",
+        statusParamsPaused:"Parâmetros incompletos — mineração pausada",
+        statusParamsAdjusted:"Parâmetros ajustados — mineração continua",
+        statusCollected:"GR coletados",
+        statusCycleComplete:"Ciclo de 30 dias concluído — novo ciclo iniciado"
+    },
+    en: {
+        title:"Mining",
+        eyebrow:"Operations Panel",
+        menuLabel:"Menu",
+        navTarefas:"Tasks",
+        navCarteira:"Wallet",
+        navLoja:"Store",
+        navSobre:"About",
+        secParam:"Parameters",
+        lblCrypto:"Crypto Price",
+        lblInvest:"Investment",
+        lblRoi:"ROI % (Monthly)",
+        secRetorno:"Estimated Return",
+        lblGanhos:"Earnings",
+        lblAtivo:"Active",
+        lblGanhosGR:"GR Earnings",
+        lblMineracaoSeg:"Mining/s",
+        secProducao:"Production",
+        minedCaption:"Mined this cycle",
+        lblTotal:"Total Mined",
+        progLabel:"Monthly cycle (30 days)",
+        tempoLabel:"Uptime",
+        btnStart:"Start",
+        phMoney:"0.00",
+        phCrypto:"0.00000000",
+        phTokens:"0.00000000",
+        phRate:"0.0000000000",
+        statusWaiting:"Waiting for parameters",
+        statusActive:"Mining in progress",
+        statusInvalid:"Fill in all fields correctly",
+        statusParamsPaused:"Incomplete parameters — mining paused",
+        statusParamsAdjusted:"Parameters adjusted — mining continues",
+        statusCollected:"GR collected",
+        statusCycleComplete:"30-day cycle complete — new cycle started"
+    }
+};
+
+let currentLang = "pt";
+let currentStatusEstado = "stopped";
+let currentStatusKey = "statusWaiting";
+
+function t(key){ return i18n[currentLang][key]; }
+
+function aplicarIdioma(lang){
+
+    currentLang = lang;
+
+    document.title = t("title");
+    document.getElementById("eyebrowText").textContent = t("eyebrow");
+    document.getElementById("titleText").textContent = t("title");
+    document.getElementById("menuLabelText").textContent = t("menuLabel");
+    document.getElementById("navTarefas").textContent = t("navTarefas");
+    document.getElementById("navCarteira").textContent = t("navCarteira");
+    document.getElementById("navLoja").textContent = t("navLoja");
+    document.getElementById("navSobre").textContent = t("navSobre");
+    document.getElementById("secParamLabel").textContent = t("secParam");
+    document.getElementById("lblCrypto").textContent = t("lblCrypto");
+    document.getElementById("lblInvest").textContent = t("lblInvest");
+    document.getElementById("lblRoi").textContent = t("lblRoi");
+    document.getElementById("secRetornoLabel").textContent = t("secRetorno");
+    document.getElementById("lblGanhos").textContent = t("lblGanhos");
+    document.getElementById("lblAtivo").textContent = t("lblAtivo");
+    document.getElementById("lblGanhosGR").textContent = t("lblGanhosGR");
+    document.getElementById("lblMineracaoSeg").textContent = t("lblMineracaoSeg");
+    document.getElementById("secProducaoLabel").textContent = t("secProducao");
+    document.getElementById("minedCaptionText").textContent = t("minedCaption");
+    document.getElementById("lblTotal").textContent = t("lblTotal");
+    document.getElementById("progLabelText").textContent = t("progLabel");
+    btnStart.textContent = t("btnStart");
+
+    cryptoEl.placeholder = t("phCrypto");
+    investimento.placeholder = t("phMoney");
+    roi.placeholder = t("phMoney");
+    ganhos.placeholder = t("phMoney");
+    ganhosTokens.placeholder = t("phTokens");
+    mineracaoSegundo.placeholder = t("phRate");
+
+    document.getElementById("langTriggerText").textContent = lang.toUpperCase();
+    document.getElementById("langOptPt").classList.toggle("active", lang === "pt");
+    document.getElementById("langOptEn").classList.toggle("active", lang === "en");
+    langDropdown.classList.remove("open");
+    langTrigger.classList.remove("open");
+
+    setStatus(currentStatusEstado, currentStatusKey);
+    calcular();
+}
+
+// ---------- estado da mineração ----------
+
+let animation = null;
+let inicio = 0;
+let tempoAcumulado = 0;   // segundos decorridos no ciclo de 30 dias (nunca reseta na coleta)
+let baseColeta = 0;       // marca (em segundos do ciclo) da última coleta
+let cumulativoGR = 0;     // soma de tudo que já foi coletado desde o início
+let dadosAtual = null;    // último cálculo válido (crypto, investimento, roi)
+
+function localeAtual(){
+    return currentLang === "en" ? "en-US" : "pt-BR";
+}
+
+function atualizarRelogio(){
+    const agora = new Date();
+    const locale = localeAtual();
+    cornerDate.textContent = agora.toLocaleDateString(locale);
+    cornerTimeText.textContent = agora.toLocaleTimeString(locale);
+}
+setInterval(atualizarRelogio, 1000);
+atualizarRelogio();
+
+function formatarMoeda(valor){
+    return valor.toLocaleString(localeAtual(), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function calcular(){
+
+    if(
+        cryptoEl.value === "" ||
+        investimento.value === "" ||
+        roi.value === ""
+    ){
+        ganhos.value = "";
+        ganhosTokens.value = "";
+        mineracaoSegundo.value = "";
+        return false;
+    }
+
+    const valorCrypto = parseFloat(cryptoEl.value);
+    const valorInvestimento = parseFloat(investimento.value);
+    const porcentagem = parseFloat(roi.value);
+
+    if(!valorCrypto || valorCrypto <= 0){
+        ganhos.value = ""; ganhosTokens.value = ""; mineracaoSegundo.value = "";
+        return false;
+    }
+
+    const ganhoMensal = valorInvestimento * (porcentagem / 100);
+    const totalTokens = ganhoMensal / valorCrypto;
+
+    const segundosMes = 30 * 24 * 60 * 60;
+    const porSegundo = totalTokens / segundosMes;
+
+    ganhos.value = formatarMoeda(ganhoMensal);
+    ganhosTokens.value = totalTokens.toFixed(8);
+    mineracaoSegundo.value = porSegundo.toFixed(10);
+
+    return { ganhoMensal, totalTokens, porSegundo, segundosMes };
+}
+
+function formatarTempo(segundos){
+    const h = Math.floor(segundos / 3600);
+    const m = Math.floor((segundos % 3600) / 60);
+    const s = Math.floor(segundos % 60);
+    return String(h).padStart(2,"0") + ":" +
+           String(m).padStart(2,"0") + ":" +
+           String(s).padStart(2,"0");
+}
+
+function setStatus(estado, key){
+    currentStatusEstado = estado;
+    currentStatusKey = key;
+    statusText.textContent = t(key);
+    statusLine.classList.remove("active","stopped");
+    statusLine.classList.add(estado);
+}
+
+function resetVisualCiclo(){
+    minerados.textContent = "0.00000000";
+    tempo.textContent = "00:00:00";
+    bar.style.width = "0%";
+    progPct.textContent = "0%";
+}
+
+// loop principal — roda enquanto a mineração estiver ativa.
+// o relógio do ciclo (tempo/barra) nunca é afetado pela coleta,
+// só reinicia quando os 30 dias realmente terminam.
+function atualizar(agora){
+
+    const tempoDecorridoCiclo = (agora - inicio) / 1000;
+
+    if(tempoDecorridoCiclo >= dadosAtual.segundosMes){
+
+        const restante = dadosAtual.porSegundo * (dadosAtual.segundosMes - baseColeta);
+        cumulativoGR += restante;
+        totalGR.value = cumulativoGR.toFixed(8);
+
+        inicio = performance.now();
+        tempoAcumulado = 0;
+        baseColeta = 0;
+        resetVisualCiclo();
+        setStatus("active", "statusCycleComplete");
+
+        animation = requestAnimationFrame(atualizar);
+        return;
+    }
+
+    tempoAcumulado = tempoDecorridoCiclo;
+
+    const mineradoDesdeColeta = dadosAtual.porSegundo * (tempoDecorridoCiclo - baseColeta);
+    minerados.textContent = mineradoDesdeColeta.toFixed(8);
+    tempo.textContent = formatarTempo(Math.floor(tempoDecorridoCiclo));
+
+    const progresso = (tempoDecorridoCiclo / dadosAtual.segundosMes) * 100;
+    bar.style.width = progresso + "%";
+    progPct.textContent = progresso.toFixed(1) + "%";
+
+    animation = requestAnimationFrame(atualizar);
+}
+
+function start(){
+
+    if(animation !== null){ return; }
+
+    dadosAtual = calcular();
+
+    if(!dadosAtual){
+        setStatus("stopped", "statusInvalid");
+        return;
+    }
+
+    btnStart.disabled = true;
+    btnCollect.disabled = false;
+    setStatus("active", "statusActive");
+
+    // retoma o ciclo de onde parou (ou começa do zero na primeira vez)
+    inicio = performance.now() - (tempoAcumulado * 1000);
+    animation = requestAnimationFrame(atualizar);
+}
+
+function coletar(){
+
+    if(animation === null){ return; }
+
+    const valorAtual = parseFloat(minerados.textContent) || 0;
+    cumulativoGR += valorAtual;
+    totalGR.value = cumulativoGR.toFixed(8);
+
+    // marca o ponto de coleta, mas o relógio do ciclo de 30 dias segue rodando
+    baseColeta = tempoAcumulado;
+    minerados.textContent = "0.00000000";
+
+    setStatus("active", "statusCollected");
+}
+
+// recalcula instantaneamente ao alterar parâmetros, sem afetar o relógio do ciclo
+function onParametroAlterado(){
+
+    if(animation === null){
+        calcular();
+        return;
+    }
+
+    cancelAnimationFrame(animation);
+    animation = null;
+
+    const novo = calcular();
+
+    if(!novo){
+        btnStart.disabled = false;
+        btnCollect.disabled = true;
+        setStatus("stopped", "statusParamsPaused");
+        return;
+    }
+
+    dadosAtual = novo;
+    setStatus("active", "statusParamsAdjusted");
+    animation = requestAnimationFrame(atualizar);
+}
+
+cryptoEl.addEventListener("input", onParametroAlterado);
+investimento.addEventListener("input", onParametroAlterado);
+roi.addEventListener("input", onParametroAlterado);
+
+calcular();
+
+</script>
+
+</body>
+</html>
