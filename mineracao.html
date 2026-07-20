@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <title>Mineração</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -427,6 +428,7 @@ h2{
     background:linear-gradient(90deg, var(--moss) 0%, var(--gold-dim) 55%, var(--gold) 100%);
     border-radius:20px;
     position:relative;
+    overflow:hidden;
     transition:width .2s linear;
 }
 
@@ -442,17 +444,6 @@ h2{
 @keyframes shimmer{
     0%{ transform:translateX(-40px); }
     100%{ transform:translateX(220px); }
-}
-
-#tempo{
-    text-align:center;
-    margin-top:14px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:26px;
-    font-weight:700;
-    letter-spacing:.06em;
-    color:var(--gold-light);
-    text-shadow:0 0 18px rgba(212,175,55,.25);
 }
 
 .botoes{
@@ -640,8 +631,6 @@ button:active{ transform:scale(.97); }
 <div class="prog"><div class="bar" id="bar"></div></div>
 </div>
 
-<div id="tempo">00:00:00</div>
-
 <div class="botoes">
 <button id="btnStart" onclick="start()">Iniciar</button>
 </div>
@@ -655,6 +644,16 @@ button:active{ transform:scale(.97); }
 
 <script>
 
+// ---------- Telegram Mini App ----------
+if(window.Telegram && window.Telegram.WebApp){
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor("#141d0f");
+    tg.setBackgroundColor("#0b0f08");
+    if(tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+}
+
 const cryptoEl = document.getElementById("crypto");
 const investimento = document.getElementById("investimento");
 const roi = document.getElementById("roi");
@@ -665,7 +664,6 @@ const mineracaoSegundo = document.getElementById("mineracaoSegundo");
 const minerados = document.getElementById("minerados");
 const totalGR = document.getElementById("totalGR");
 
-const tempo = document.getElementById("tempo");
 const cornerDate = document.getElementById("cornerDate");
 const cornerTimeText = document.getElementById("cornerTimeText");
 const bar = document.getElementById("bar");
@@ -911,7 +909,6 @@ function setStatus(estado, key){
 
 function resetVisualCiclo(){
     minerados.textContent = "0.00000000";
-    tempo.textContent = "00:00:00";
     bar.style.width = "0%";
     progPct.textContent = "0%";
 }
@@ -943,7 +940,6 @@ function atualizar(agora){
 
     const mineradoDesdeColeta = dadosAtual.porSegundo * (tempoDecorridoCiclo - baseColeta);
     minerados.textContent = mineradoDesdeColeta.toFixed(8);
-    tempo.textContent = formatarTempo(Math.floor(tempoDecorridoCiclo));
 
     const progresso = (tempoDecorridoCiclo / dadosAtual.segundosMes) * 100;
     bar.style.width = progresso + "%";
